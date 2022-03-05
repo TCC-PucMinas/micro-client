@@ -1,0 +1,84 @@
+syntax = "proto3";
+
+option go_package = "/communicate";
+
+message ValidateProductByIdRequest {
+  int64 idProduct = 1;
+}
+
+message ValidateProductByIdResponse {
+  bool valid = 1;
+}
+
+message Product {
+  int64 id = 1;
+  string name = 2;
+  string price = 3;
+  string nfe = 4;
+  int64 idClient = 5;
+}
+
+message DataProduct {
+  repeated Product product = 1;
+}
+
+message ProductListAllRequest {
+  int64 page = 1;
+  int64 limit = 2;
+  string name = 3;
+}
+
+message ProductListAllResponse {
+  DataProduct data = 1;
+  int64 page = 2;
+  int64 limit = 3;
+  int64 total = 4;
+}
+
+message CreateProductRequest {
+  string name = 1;
+  string price = 2;
+  string nfe = 3;
+  int64 idClient = 4;
+}
+
+message CreateProductResponse {
+  bool created = 1;
+}
+
+message DeleteProductByIdRequest {
+  int64 id = 1;
+}
+
+message DeleteProductByIdResponse {
+  bool deleted = 1;
+}
+
+message UpdateProductByIdRequest{
+  int64 id = 1;
+  string name = 2;
+  string price = 3;
+  string nfe = 4;
+  int64 idClient = 5;
+}
+
+message UpdateProductByIdResponse {
+  bool updated = 1;
+}
+
+message ListOneProductByIdRequest {
+  int64 id = 1;
+}
+
+message ListOneProductByIdResponse {
+  Product product = 1;
+}
+
+service ProductCommunicate {
+  rpc ValidateProductById (ValidateProductByIdRequest) returns (ValidateProductByIdResponse) {};
+  rpc ProductListAll (ProductListAllRequest) returns (ProductListAllResponse) {};
+  rpc CreateProduct (CreateProductRequest) returns (CreateProductResponse) {};
+  rpc ListOneProductById (ListOneProductByIdRequest) returns (ListOneProductByIdResponse) {};
+  rpc UpdateProductById (UpdateProductByIdRequest) returns (UpdateProductByIdResponse) {};
+  rpc DeleteProductById (DeleteProductByIdRequest) returns (DeleteProductByIdResponse) {};
+}

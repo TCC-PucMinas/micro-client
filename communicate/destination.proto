@@ -1,0 +1,95 @@
+syntax = "proto3";
+
+option go_package = "/communicate";
+
+message ValidateDestinationByIdRequest {
+  int64 id = 1;
+}
+
+message ValidateDestinationByIdResponse {
+  bool valid = 1;
+}
+
+message Destination {
+  int64 id = 1;
+  string street = 2;
+  string district = 3;
+  string city = 4;
+  string country = 5;
+  string state = 6;
+  string number = 7;
+  string lat = 8;
+  string lng = 9;
+  int64  idClient = 10;
+}
+
+message DataDestination {
+  repeated Destination destination = 1;
+}
+
+message DestinationListAllRequest {
+  int64 page = 1;
+  int64 limit = 2;
+  int64 idClient = 3;
+}
+
+message DestinationListAllResponse {
+  DataDestination data = 1;
+  int64 page = 2;
+  int64 limit = 3;
+  int64 total = 4;
+}
+
+message CreateDestinationRequest {
+  string street = 1;
+  string district = 2;
+  string city = 3;
+  string country = 4;
+  string state = 5;
+  string number = 6;
+  int64 idClient = 7;
+}
+
+message CreateDestinationResponse {
+  bool created = 1;
+}
+
+message DeleteDestinationByIdRequest {
+  int64 id = 1;
+}
+
+message DeleteDestinationByIdResponse {
+  bool deleted = 1;
+}
+
+message UpdateDestinationByIdRequest{
+  int64 id = 1;
+  string street = 2;
+  string district = 3;
+  string city = 4;
+  string country = 5;
+  string state = 6;
+  string number = 7;
+  int64 idClient = 8;
+}
+
+message UpdateDestinationByIdResponse {
+  bool updated = 1;
+}
+
+message ListOneDestinationByIdRequest {
+  int64 id = 1;
+}
+
+message ListOneDestinationByIdResponse {
+  Destination destination = 1;
+}
+
+service DestinationCommunicate {
+  rpc ValidateDestinationById (ValidateDestinationByIdRequest) returns (ValidateDestinationByIdResponse) {};
+  rpc DestinationListAll (DestinationListAllRequest) returns (DestinationListAllResponse) {};
+  rpc CreateDestination (CreateDestinationRequest) returns (CreateDestinationResponse) {};
+  rpc ListOneDestinationById (ListOneDestinationByIdRequest) returns (ListOneDestinationByIdResponse) {};
+  rpc UpdateDestinationById (UpdateDestinationByIdRequest) returns (UpdateDestinationByIdResponse) {};
+  rpc DeleteDestinationById (DeleteDestinationByIdRequest) returns (DeleteDestinationByIdResponse) {};
+}
