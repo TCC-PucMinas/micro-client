@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 	"log"
-	"micro-logistic/communicate"
-	model "micro-logistic/models"
+	"micro-client/communicate"
+	model "micro-client/models"
 )
 
 type ProductServer struct{}

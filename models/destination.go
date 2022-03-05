@@ -4,11 +4,11 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"micro-logistic/helpers"
+	"micro-client/helpers"
 	"strconv"
 	"time"
 
-	"micro-logistic/db"
+	"micro-client/db"
 )
 
 type Destination struct {

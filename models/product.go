@@ -3,8 +3,8 @@ package model
 import (
 	"encoding/json"
 	"fmt"
-	"micro-logistic/db"
-	"micro-logistic/helpers"
+	"micro-client/db"
+	"micro-client/helpers"
 	"strconv"
 	"time"
 )

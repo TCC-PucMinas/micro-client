@@ -5,9 +5,9 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"micro-logistic/communicate"
-	model "micro-logistic/models"
-	"micro-logistic/service"
+	"micro-client/communicate"
+	model "micro-client/models"
+	"micro-client/service"
 )
 
 type DestinationServer struct{}
