@@ -25,7 +25,7 @@ func main() {
 	communicate.RegisterDestinationCommunicateServer(grpcServer, &controller.DestinationServer{})
 	communicate.RegisterProductCommunicateServer(grpcServer, &controller.ProductServer{})
 
-	fmt.Printf("[x] - Server logistic listen http://localhost:%v\n", port)
+	fmt.Printf("[x] - Server client listen http://localhost:%v\n", port)
 
 	if err := grpcServer.Serve(listener); err != nil {
 		panic(err.Error())

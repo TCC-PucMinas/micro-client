@@ -24,7 +24,11 @@ var (
 )
 
 func setRedisCacheProductgGetById(product *Product) error {
-	db := db.ConnectDatabaseRedis()
+	db, err := db.ConnectDatabaseRedis()
+
+	if err != nil {
+		return err
+	}
 
 	json, err := json.Marshal(product)
 
@@ -39,7 +43,11 @@ func setRedisCacheProductgGetById(product *Product) error {
 func getProductRedisCacheGetOneById(id int64) (Product, error) {
 	product := Product{}
 
-	redis := db.ConnectDatabaseRedis()
+	redis, err := db.ConnectDatabaseRedis()
+
+	if err != nil {
+		return product, err
+	}
 
 	key := fmt.Sprintf("%v - %v", keyProductRedisGetById, id)
 
@@ -59,7 +67,11 @@ func getProductRedisCacheGetOneById(id int64) (Product, error) {
 func getProductRedisCacheGetOneByNameAndIdClient(name string, idClient int64) (Product, error) {
 	product := Product{}
 
-	redis := db.ConnectDatabaseRedis()
+	redis, err := db.ConnectDatabaseRedis()
+
+	if err != nil {
+		return product, err
+	}
 
 	key := fmt.Sprintf("%v - %v - %v", keyProductRedisGetByName, name, idClient)
 
@@ -77,7 +89,11 @@ func getProductRedisCacheGetOneByNameAndIdClient(name string, idClient int64) (P
 }
 
 func setRedisCacheProductGetByName(product *Product) error {
-	redis := db.ConnectDatabaseRedis()
+	redis, err := db.ConnectDatabaseRedis()
+
+	if err != nil {
+		return err
+	}
 
 	marshal, err := json.Marshal(product)
 
@@ -92,7 +108,11 @@ func setRedisCacheProductGetByName(product *Product) error {
 func getProductRedisCacheGetOneByNamePaginate(name string, page, limit int64) ([]Product, error) {
 	var product []Product
 
-	redis := db.ConnectDatabaseRedis()
+	redis, err := db.ConnectDatabaseRedis()
+
+	if err != nil {
+		return product, err
+	}
 
 	key := fmt.Sprintf("%v - %v - %v - %v", keyProductRedisGetByNameAndPage, name, page, limit)
 
@@ -110,7 +130,11 @@ func getProductRedisCacheGetOneByNamePaginate(name string, page, limit int64) ([
 }
 
 func setRedisCacheProductGetByPaginateByName(name string, page, limit int64, product []Product) error {
-	redis := db.ConnectDatabaseRedis()
+	redis, err := db.ConnectDatabaseRedis()
+
+	if err != nil {
+		return err
+	}
 
 	marshal, err := json.Marshal(product)
 

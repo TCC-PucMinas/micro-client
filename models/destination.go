@@ -31,7 +31,11 @@ var (
 )
 
 func setRedisCacheDestinationGetByClientId(destination *Destination) error {
-	db := db.ConnectDatabaseRedis()
+	db, err := db.ConnectDatabaseRedis()
+
+	if err != nil {
+		return err
+	}
 
 	json, err := json.Marshal(destination)
 
@@ -46,7 +50,11 @@ func setRedisCacheDestinationGetByClientId(destination *Destination) error {
 func getRedisCacheDestinationGetByClientId(id int64) (Destination, error) {
 	destination := Destination{}
 
-	redis := db.ConnectDatabaseRedis()
+	redis, err := db.ConnectDatabaseRedis()
+
+	if err != nil {
+		return destination, err
+	}
 
 	key := fmt.Sprintf("%v - %v", keyDestinationRedisGetOneByClientId, id)
 
@@ -64,7 +72,11 @@ func getRedisCacheDestinationGetByClientId(id int64) (Destination, error) {
 }
 
 func setRedisCacheDestinationGetById(destination *Destination) error {
-	db := db.ConnectDatabaseRedis()
+	db, err := db.ConnectDatabaseRedis()
+
+	if err != nil {
+		return err
+	}
 
 	json, err := json.Marshal(destination)
 
@@ -79,7 +91,11 @@ func setRedisCacheDestinationGetById(destination *Destination) error {
 func getRedisCacheDestinationGetById(id int64) (Destination, error) {
 	destination := Destination{}
 
-	redis := db.ConnectDatabaseRedis()
+	redis, err := db.ConnectDatabaseRedis()
+
+	if err != nil {
+		return destination, err
+	}
 
 	key := fmt.Sprintf("%v - %v", keyDestinationRedisGetOneById, id)
 
@@ -242,7 +258,11 @@ func (destination *Destination) DeleteDestinationById() error {
 func getClientRedisCacheGetOneByClientIdPaginate(clientId int64, page, limit int64) ([]Destination, error) {
 	var destinations []Destination
 
-	redis := db.ConnectDatabaseRedis()
+	redis, err := db.ConnectDatabaseRedis()
+
+	if err != nil {
+		return destinations, err
+	}
 
 	key := fmt.Sprintf("%v - %v -%v -%v", keyDestinationRedisGetPaginateByClientId, clientId, page, limit)
 
@@ -260,7 +280,11 @@ func getClientRedisCacheGetOneByClientIdPaginate(clientId int64, page, limit int
 }
 
 func setRedisCacheClientGetByClientIdPaginate(clientId int64, page, limit int64, clients []Destination) error {
-	redis := db.ConnectDatabaseRedis()
+	redis, err := db.ConnectDatabaseRedis()
+
+	if err != nil {
+		return err
+	}
 
 	marshal, err := json.Marshal(clients)
 

@@ -25,7 +25,11 @@ type Client struct {
 }
 
 func setRedisCacheClientGetById(client *Client) error {
-	redis := db.ConnectDatabaseRedis()
+	redis, err := db.ConnectDatabaseRedis()
+
+	if err != nil {
+		return err
+	}
 
 	marshal, err := json.Marshal(client)
 
@@ -40,7 +44,11 @@ func setRedisCacheClientGetById(client *Client) error {
 func getClientRedisCacheGetOneById(id int64) (Client, error) {
 	client := Client{}
 
-	redis := db.ConnectDatabaseRedis()
+	redis, err := db.ConnectDatabaseRedis()
+
+	if err != nil {
+		return client, err
+	}
 
 	key := fmt.Sprintf("%v - %v", keyClientRedisGetById, id)
 
@@ -58,7 +66,11 @@ func getClientRedisCacheGetOneById(id int64) (Client, error) {
 }
 
 func setRedisCacheClientGetByName(name string, page, limit int64, clients []Client) error {
-	redis := db.ConnectDatabaseRedis()
+	redis, err := db.ConnectDatabaseRedis()
+
+	if err != nil {
+		return err
+	}
 
 	marshal, err := json.Marshal(clients)
 
@@ -72,7 +84,11 @@ func setRedisCacheClientGetByName(name string, page, limit int64, clients []Clie
 }
 
 func setRedisCacheClientGetByNameAndEmail(client *Client) error {
-	redis := db.ConnectDatabaseRedis()
+	redis, err := db.ConnectDatabaseRedis()
+
+	if err != nil {
+		return err
+	}
 
 	marshal, err := json.Marshal(client)
 
@@ -87,7 +103,11 @@ func setRedisCacheClientGetByNameAndEmail(client *Client) error {
 func getClientRedisCacheGetOneByNameAndEmail(name, email string) (Client, error) {
 	client := Client{}
 
-	redis := db.ConnectDatabaseRedis()
+	redis, err := db.ConnectDatabaseRedis()
+
+	if err != nil {
+		return client, err
+	}
 
 	key := fmt.Sprintf("%v - %v - %v", keyClientRedisGetByNameAndEmail, name, email)
 
@@ -107,7 +127,11 @@ func getClientRedisCacheGetOneByNameAndEmail(name, email string) (Client, error)
 func getClientRedisCacheGetOneByName(name string, page, limit int64) ([]Client, error) {
 	var clients []Client
 
-	redis := db.ConnectDatabaseRedis()
+	redis, err := db.ConnectDatabaseRedis()
+
+	if err != nil {
+		return clients, err
+	}
 
 	key := fmt.Sprintf("%v - %v -%v -%v", keyClientRedisGetByNameAndPage, name, page, limit)
 
