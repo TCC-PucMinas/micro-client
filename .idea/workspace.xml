@@ -5,16 +5,20 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="de5f78af-3ea6-481f-b45c-32dcfbb39c6f" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/sqldialects.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/db/mysql.go" beforeDir="false" afterPath="$PROJECT_DIR$/db/mysql.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/db/redis.go" beforeDir="false" afterPath="$PROJECT_DIR$/db/redis.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/sqldialects.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/communicate/map.pb.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/communicate/map.proto" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/communicate/destination.pb.go" beforeDir="false" afterPath="$PROJECT_DIR$/communicate/destination.pb.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/communicate/destination.proto" beforeDir="false" afterPath="$PROJECT_DIR$/communicate/destination.proto" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/controller/client.go" beforeDir="false" afterPath="$PROJECT_DIR$/controller/client.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/controller/destination.go" beforeDir="false" afterPath="$PROJECT_DIR$/controller/destination.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/controller/product.go" beforeDir="false" afterPath="$PROJECT_DIR$/controller/product.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/models/client.go" beforeDir="false" afterPath="$PROJECT_DIR$/models/client.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/models/destination.go" beforeDir="false" afterPath="$PROJECT_DIR$/models/destination.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/product.go" beforeDir="false" afterPath="$PROJECT_DIR$/models/product.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scritp.sql" beforeDir="false" afterPath="$PROJECT_DIR$/scritp.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/service/maps.go" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -37,6 +41,7 @@
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="DatabaseDriversLRU" value="mysql" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
@@ -44,11 +49,17 @@
     <property name="go.format.on.save.advertiser.fired" value="true" />
     <property name="go.formatter.settings.were.checked" value="true" />
     <property name="go.import.settings.migrated" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/communicate" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
     <property name="nodejs_package_manager_path" value="npm" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/communicate" />
+    </key>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -58,7 +69,11 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1646588598896</updated>
-      <workItem from="1646588601597" duration="699000" />
+      <workItem from="1646588601597" duration="1993000" />
+      <workItem from="1646859312895" duration="476000" />
+      <workItem from="1646954895424" duration="97000" />
+      <workItem from="1646962219722" duration="3582000" />
+      <workItem from="1647035568847" duration="9902000" />
     </task>
     <servers />
   </component>

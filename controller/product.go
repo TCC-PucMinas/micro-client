@@ -3,7 +3,6 @@ package controller
 import (
 	"context"
 	"errors"
-	"log"
 	"micro-client/communicate"
 	model "micro-client/models"
 )
@@ -75,7 +74,6 @@ func (s *ProductServer) CreateProduct(ctx context.Context, request *communicate.
 	}
 
 	if err := product.CreateProduct(); err != nil {
-		log.Println("err", err)
 		return res, errors.New("Error creating product!")
 	}
 

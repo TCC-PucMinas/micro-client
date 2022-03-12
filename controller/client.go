@@ -155,7 +155,7 @@ func (s *ClientServer) ValidateClientById(ctx context.Context, request *communic
 	if err := client.GetById(request.IdClient); err != nil {
 		return res, errors.New("Client Id invalid!")
 	}
-
+	
 	res.Valid = true
 
 	return res, nil

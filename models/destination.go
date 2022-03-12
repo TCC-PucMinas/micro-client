@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"micro-client/helpers"
-	"strconv"
 	"time"
 
 	"micro-client/db"
@@ -21,13 +20,14 @@ type Destination struct {
 	Number   string `json:"number"`
 	Lat      string `json:"lat"`
 	Lng      string `json:"lng"`
+	ZipCode  string `json:"zipCode"`
 	Client   Client `json:"client"`
 }
 
 var (
-	keyDestinationRedisGetOneByClientId      = "key-client-get-by-client-id"
-	keyDestinationRedisGetPaginateByClientId = "key-client-get-paginate-client-id"
-	keyDestinationRedisGetOneById            = "key-client-get-by-id"
+	keyDestinationRedisGetOneByClientId      = "key-destination-get-by-client-id"
+	keyDestinationRedisGetPaginateByClientId = "key-destination-get-paginate-client-id"
+	keyDestinationRedisGetOneById            = "key-destination-get-by-id"
 )
 
 func setRedisCacheDestinationGetByClientId(destination *Destination) error {
@@ -115,13 +115,24 @@ func getRedisCacheDestinationGetById(id int64) (Destination, error) {
 func (destination *Destination) DestinationGetByClientId(idClient int64) error {
 
 	if c, err := getRedisCacheDestinationGetByClientId(idClient); err == nil {
-		destination = &c
+		destination.Id = c.Id
+		destination.Street = c.Street
+		destination.District = c.District
+		destination.Lng = c.Lng
+		destination.Lat = c.Lat
+		destination.District = c.District
+		destination.State = c.State
+		destination.Country = c.Country
+		destination.Number = c.Number
+		destination.City = c.City
+		destination.ZipCode = c.ZipCode
+		destination.Client.Id = c.Client.Id
 		return nil
 	}
 
 	sql := db.ConnectDatabase()
 
-	query := `select id, street, district, city, country, state, number, lat, lng from destinations where id_client = ? limit 1;`
+	query := `select id, street, district, city, country, state, number, lat, lng, zipCode from destinations where id_client = ? limit 1;`
 
 	requestConfig, err := sql.Query(query, idClient)
 
@@ -130,10 +141,10 @@ func (destination *Destination) DestinationGetByClientId(idClient int64) error {
 	}
 
 	for requestConfig.Next() {
-		var id, street, district, city, country, state, number, lat, lng string
-		_ = requestConfig.Scan(&id, &street, &district, &city, &country, &state, &number, &lat, &lng)
-		i64, _ := strconv.ParseInt(id, 10, 64)
-		destination.Id = i64
+		var street, district, city, country, state, number, lat, lng, zipCode string
+		var id int64
+		_ = requestConfig.Scan(&id, &street, &district, &city, &country, &state, &number, &lat, &lng, &zipCode)
+		destination.Id = id
 		destination.Street = street
 		destination.District = district
 		destination.City = city
@@ -141,6 +152,7 @@ func (destination *Destination) DestinationGetByClientId(idClient int64) error {
 		destination.State = state
 		destination.Number = number
 		destination.Lat = lat
+		destination.ZipCode = zipCode
 		destination.Lng = lng
 	}
 
@@ -155,14 +167,25 @@ func (destination *Destination) DestinationGetByClientId(idClient int64) error {
 
 func (destination *Destination) GetDestinationById(idDestination int64) error {
 
-	if c, err := getRedisCacheDestinationGetById(idDestination); err == nil {
-		destination = &c
+	if c, err := getRedisCacheDestinationGetById(idDestination); err == nil && c.Id != 0 {
+		destination.Id = c.Id
+		destination.Street = c.Street
+		destination.District = c.District
+		destination.Lng = c.Lng
+		destination.Lat = c.Lat
+		destination.District = c.District
+		destination.State = c.State
+		destination.Country = c.Country
+		destination.Number = c.Number
+		destination.City = c.City
+		destination.ZipCode = c.ZipCode
+		destination.Client.Id = c.Client.Id
 		return nil
 	}
 
 	sql := db.ConnectDatabase()
 
-	query := `select id, street, district, city, country, state, number, lat, lng, id_client from destinations where id = ? limit 1;`
+	query := `select id, street, district, city, country, state, number, lat, lng, zipCode, id_client from destinations where id = ? limit 1;`
 
 	requestConfig, err := sql.Query(query, idDestination)
 
@@ -171,9 +194,9 @@ func (destination *Destination) GetDestinationById(idDestination int64) error {
 	}
 
 	for requestConfig.Next() {
-		var street, district, city, country, state, number, lat, lng string
+		var street, district, city, country, state, number, lat, lng, zipCode string
 		var id, idClient int64
-		_ = requestConfig.Scan(&id, &street, &district, &city, &country, &state, &number, &lat, &lng, &idClient)
+		_ = requestConfig.Scan(&id, &street, &district, &city, &country, &state, &number, &lat, &lng, &zipCode, &idClient)
 		destination.Id = id
 		destination.Street = street
 		destination.District = district
@@ -183,6 +206,7 @@ func (destination *Destination) GetDestinationById(idDestination int64) error {
 		destination.Number = number
 		destination.Lat = lat
 		destination.Lng = lng
+		destination.ZipCode = zipCode
 		destination.Client.Id = idClient
 	}
 
@@ -198,7 +222,7 @@ func (destination *Destination) GetDestinationById(idDestination int64) error {
 func (destination *Destination) CreateDestination() error {
 	sql := db.ConnectDatabase()
 
-	query := "insert into destinations (street, district, city, country, `state`, `number`, lat, lng, id_client) values (?, ?, ?, ?, ?, ?, ?, ?, ?)"
+	query := "insert into destinations (street, district, city, country, `state`, `number`, lat, lng, zipCode, id_client) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
 
 	createDestination, err := sql.Prepare(query)
 
@@ -206,7 +230,7 @@ func (destination *Destination) CreateDestination() error {
 		return err
 	}
 
-	_, e := createDestination.Exec(destination.Street, destination.District, destination.City, destination.Country, destination.State, destination.Number, destination.Lat, destination.Lng, destination.Client.Id)
+	_, e := createDestination.Exec(destination.Street, destination.District, destination.City, destination.Country, destination.State, destination.Number, destination.Lat, destination.Lng, destination.ZipCode, destination.Client.Id)
 
 	if e != nil {
 		return e
@@ -218,7 +242,7 @@ func (destination *Destination) CreateDestination() error {
 func (destination *Destination) UpdateDestination() error {
 	sql := db.ConnectDatabase()
 
-	query := "update destinations set street = ?, district = ?, city = ?, country = ?, `state` = ?, `number` = ?, lat = ?, lng = ?, id_client = ? where id = ? "
+	query := "update destinations set street = ?, district = ?, city = ?, country = ?, `state` = ?, `number` = ?, lat = ?, lng = ?, zipCode = ? id_client = ? where id = ? "
 
 	destinationUpdate, err := sql.Prepare(query)
 
@@ -226,7 +250,7 @@ func (destination *Destination) UpdateDestination() error {
 		return err
 	}
 
-	_, e := destinationUpdate.Exec(destination.Street, destination.District, destination.City, destination.Country, destination.State, destination.Number, destination.Lat, destination.Lng, destination.Client.Id, destination.Id)
+	_, e := destinationUpdate.Exec(destination.Street, destination.District, destination.City, destination.Country, destination.State, destination.Number, destination.Lat, destination.Lng, destination.ZipCode, destination.Client.Id, destination.Id)
 
 	if e != nil {
 		return e
@@ -317,7 +341,7 @@ func (destination *Destination) GetDestinationsByClientIdPaginate(clientId int64
 
 	paginate.MountedQuery("destinations")
 
-	query := fmt.Sprintf("select id, street, district, city, country, state, number, lat, lng, id_client, %v from destinations where id_client = ? LIMIT ? OFFSET ?;", paginate.Query)
+	query := fmt.Sprintf("select id, street, district, city, country, state, number, lat, lng, zipCode, id_client, %v from destinations where id_client = ? LIMIT ? OFFSET ?;", paginate.Query)
 
 	requestConfig, err := sql.Query(query, clientId, paginate.Limit, paginate.Page)
 
@@ -327,9 +351,9 @@ func (destination *Destination) GetDestinationsByClientIdPaginate(clientId int64
 
 	for requestConfig.Next() {
 		destinationGet := Destination{}
-		var street, district, city, country, state, number, lat, lng string
+		var street, district, city, country, state, number, lat, lng, zipCode string
 		var id, idClient int64
-		_ = requestConfig.Scan(&id, &street, &district, &city, &country, &state, &number, &lat, &lng, &idClient, &total)
+		_ = requestConfig.Scan(&id, &street, &district, &city, &country, &state, &number, &lat, &lng, &zipCode, &idClient, &total)
 
 		if id != 0 {
 			destinationGet.Id = id
@@ -341,13 +365,15 @@ func (destination *Destination) GetDestinationsByClientIdPaginate(clientId int64
 			destinationGet.Number = number
 			destinationGet.Lat = lat
 			destinationGet.Lng = lng
+			destinationGet.ZipCode = zipCode
 			destinationGet.Client.Id = idClient
 			destinationArray = append(destinationArray, destinationGet)
 		}
 
 	}
-
-	_ = setRedisCacheClientGetByClientIdPaginate(clientId, page, limit, destinationArray)
+	if len(destinationArray) > 0 {
+		_ = setRedisCacheClientGetByClientIdPaginate(clientId, page, limit, destinationArray)
+	}
 
 	return destinationArray, total, nil
 }

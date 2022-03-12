@@ -20,7 +20,8 @@ message Destination {
   string number = 7;
   string lat = 8;
   string lng = 9;
-  int64  idClient = 10;
+  string zipCode = 10;
+  int64  idClient = 11;
 }
 
 message DataDestination {
@@ -47,7 +48,8 @@ message CreateDestinationRequest {
   string country = 4;
   string state = 5;
   string number = 6;
-  int64 idClient = 7;
+  string zipCode = 7;
+  int64 idClient = 8;
 }
 
 message CreateDestinationResponse {
@@ -70,7 +72,8 @@ message UpdateDestinationByIdRequest{
   string country = 5;
   string state = 6;
   string number = 7;
-  int64 idClient = 8;
+  string zipCode = 8;
+  int64 idClient = 9;
 }
 
 message UpdateDestinationByIdResponse {

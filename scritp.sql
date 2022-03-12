@@ -1,4 +1,4 @@
-drop database if exists db_marketplace;
+-- drop database if exists db_marketplace;
 
 CREATE DATABASE db_marketplace CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 use db_marketplace;
@@ -23,12 +23,13 @@ create table destinations (
     number varchar(255) not null,
     lat varchar(255),
     lng varchar(255),
+    zipCode varchar(100) not null,
     id_client int unsigned not null,
 	FOREIGN KEY (id_client) REFERENCES clients(id),
     `created_at` datetime default now()
 );
 
-insert into destinations (street, district, city, country, state, number, lat, lng, id_client) values ('Padre josé alves', 'Salesianos', 'Juazeiro do Norte', 'Brasil', 'Ceará', '790', '-7.205440', '-39.324280', 1);
+insert into destinations (street, district, city, country, state, number, lat, lng, zipCode, id_client) values ('Padre josé alves', 'Salesianos', 'Juazeiro do Norte', 'Brasil', 'Ceará', '790', '-7.205440', '-39.324280', '63050222', 1);
 
 create table products (
     id int unsigned auto_increment primary key,

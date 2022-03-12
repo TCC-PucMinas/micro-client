@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+option go_package = "/communicate";
+
+message GelocationRequest {
+  string street = 1;
+  string district = 2;
+  string city = 3;
+  string country = 4;
+  string state = 5;
+  string number = 6;
+  string zipCode = 7;
+}
+
+message GelocationResponse {
+    string lat = 1;
+    string lng = 2;
+}
+
+message LatAndLng {
+  string lat = 1;
+  string lng = 2;
+}
+
+message DirectionLocationRequest{
+  LatAndLng origin = 1;
+  LatAndLng destiny = 2;
+}
+
+message DirectionLocationResponse {
+  LatAndLng origin = 1;
+  LatAndLng destiny = 2;
+  string HumanReadable = 3;
+  int64 Meters = 4;
+}
+
+service GelocationCommunicate {
+  rpc GetLocation (GelocationRequest) returns (GelocationResponse) {};
+  rpc DirectionLocation(DirectionLocationRequest) returns (DirectionLocationResponse) {}
+}

@@ -3,11 +3,9 @@ package controller
 import (
 	"context"
 	"errors"
-	"fmt"
-	"log"
+	"google.golang.org/grpc"
 	"micro-client/communicate"
 	model "micro-client/models"
-	"micro-client/service"
 )
 
 type DestinationServer struct{}
@@ -50,6 +48,7 @@ func (s *DestinationServer) DestinationListAll(ctx context.Context, request *com
 		destination.Number = c.Number
 		destination.Lat = c.Lat
 		destination.Lng = c.Lng
+		destination.ZipCode = c.ZipCode
 		destination.IdClient = c.Client.Id
 		data.Destination = append(data.Destination, destination)
 	}
@@ -71,20 +70,39 @@ func (s *DestinationServer) CreateDestination(ctx context.Context, request *comm
 		City:     request.City,
 		Country:  request.Country,
 		State:    request.State,
+		ZipCode:  request.ZipCode,
 		Number:   request.Number,
 		Client:   model.Client{Id: request.IdClient},
 	}
 
-	latAndLng := service.LatAndLng{}
+	connGeolocation, err := grpc.Dial(":7000", grpc.WithInsecure())
 
-	address := fmt.Sprintf("%v, %v, %v, %v, %v, %v", destination.Street, destination.Number, destination.District, destination.City, destination.State, destination.Country)
-
-	if err := latAndLng.GetLatAndLngByAddress(address); err != nil {
+	if err != nil {
 		return res, err
 	}
 
-	destination.Lat = latAndLng.Lat
-	destination.Lng = latAndLng.Lng
+	defer connGeolocation.Close()
+
+	serviceLocation := communicate.NewGelocationCommunicateClient(connGeolocation)
+
+	requestLocation := &communicate.GelocationRequest{
+		Street:   request.Street,
+		District: request.District,
+		City:     request.City,
+		Country:  request.Country,
+		ZipCode:  request.ZipCode,
+		State:    request.State,
+		Number:   request.Number,
+	}
+
+	location, err := serviceLocation.GetLocation(ctx, requestLocation)
+
+	if err != nil {
+		return res, err
+	}
+
+	destination.Lat = location.Lat
+	destination.Lng = location.Lng
 
 	if err := destination.CreateDestination(); err != nil {
 		return res, errors.New("Error creating destination!")
@@ -114,6 +132,7 @@ func (s *DestinationServer) ListOneDestinationById(ctx context.Context, request 
 	destination.Number = c.Number
 	destination.Lat = c.Lat
 	destination.Lng = c.Lng
+	destination.ZipCode = c.ZipCode
 	destination.IdClient = c.Client.Id
 
 	res.Destination = destination
@@ -131,6 +150,7 @@ func (s *DestinationServer) UpdateDestinationById(ctx context.Context, request *
 		State:    request.State,
 		Street:   request.Street,
 		District: request.District,
+		ZipCode:  request.ZipCode,
 		Number:   request.Number,
 		Client:   model.Client{Id: request.IdClient},
 	}
@@ -140,7 +160,6 @@ func (s *DestinationServer) UpdateDestinationById(ctx context.Context, request *
 	}
 
 	if err := destination.UpdateDestination(); err != nil {
-		log.Println("err", err)
 		return res, errors.New("Erro updating destination!")
 	}
 

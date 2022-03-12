@@ -2,7 +2,6 @@ package model
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"micro-client/helpers"
 	"strconv"
@@ -36,7 +35,7 @@ func setRedisCacheClientGetById(client *Client) error {
 	if err != nil {
 		return err
 	}
-	key := fmt.Sprintf("%v - %v", keyClientRedisGetById, marshal)
+	key := fmt.Sprintf("%v - %v", keyClientRedisGetById, client.Id)
 
 	return redis.Set(key, marshal, 1*time.Hour).Err()
 }
@@ -150,8 +149,11 @@ func getClientRedisCacheGetOneByName(name string, page, limit int64) ([]Client, 
 
 func (client *Client) GetById(idClient int64) error {
 
-	if c, err := getClientRedisCacheGetOneById(idClient); err == nil {
-		client = &c
+	if c, err := getClientRedisCacheGetOneById(idClient); err == nil && c.Id != 0 {
+		client.Id = c.Id
+		client.Name = c.Name
+		client.Email = c.Email
+		client.Phone = c.Phone
 		return nil
 	}
 
@@ -166,17 +168,13 @@ func (client *Client) GetById(idClient int64) error {
 	}
 
 	for requestConfig.Next() {
-		var id, name, email, phone string
+		var name, email, phone string
+		var id int64
 		_ = requestConfig.Scan(&id, &name, &email, &phone)
-		i64, _ := strconv.ParseInt(id, 10, 64)
-		client.Id = i64
+		client.Id = id
 		client.Name = name
 		client.Email = email
 		client.Phone = phone
-	}
-
-	if client.Id == 0 {
-		return errors.New("Not found key")
 	}
 
 	_ = setRedisCacheClientGetById(client)
