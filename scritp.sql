@@ -1,4 +1,4 @@
--- drop database if exists db_marketplace;
+drop database if exists db_marketplace;
 
 CREATE DATABASE db_marketplace CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 use db_marketplace;

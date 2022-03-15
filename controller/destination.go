@@ -3,9 +3,9 @@ package controller
 import (
 	"context"
 	"errors"
-	"google.golang.org/grpc"
 	"micro-client/communicate"
 	model "micro-client/models"
+	"micro-client/service"
 )
 
 type DestinationServer struct{}
@@ -75,34 +75,14 @@ func (s *DestinationServer) CreateDestination(ctx context.Context, request *comm
 		Client:   model.Client{Id: request.IdClient},
 	}
 
-	connGeolocation, err := grpc.Dial(":7000", grpc.WithInsecure())
+	lat, lng, err := service.GetLocation(destination)
 
 	if err != nil {
 		return res, err
 	}
 
-	defer connGeolocation.Close()
-
-	serviceLocation := communicate.NewGelocationCommunicateClient(connGeolocation)
-
-	requestLocation := &communicate.GelocationRequest{
-		Street:   request.Street,
-		District: request.District,
-		City:     request.City,
-		Country:  request.Country,
-		ZipCode:  request.ZipCode,
-		State:    request.State,
-		Number:   request.Number,
-	}
-
-	location, err := serviceLocation.GetLocation(ctx, requestLocation)
-
-	if err != nil {
-		return res, err
-	}
-
-	destination.Lat = location.Lat
-	destination.Lng = location.Lng
+	destination.Lat = lat
+	destination.Lng = lng
 
 	if err := destination.CreateDestination(); err != nil {
 		return res, errors.New("Error creating destination!")
@@ -158,6 +138,15 @@ func (s *DestinationServer) UpdateDestinationById(ctx context.Context, request *
 	if err := destination.GetDestinationById(request.Id); err != nil || destination.Id == 0 {
 		return res, errors.New("Destination not found!")
 	}
+
+	lat, lng, err := service.GetLocation(destination)
+
+	if err != nil {
+		return res, err
+	}
+
+	destination.Lat = lat
+	destination.Lng = lng
 
 	if err := destination.UpdateDestination(); err != nil {
 		return res, errors.New("Erro updating destination!")
