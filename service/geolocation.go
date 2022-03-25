@@ -2,13 +2,13 @@ package service
 
 import (
 	"context"
-	"google.golang.org/grpc"
 	"micro-client/communicate"
 	model "micro-client/models"
-	"time"
+
+	"google.golang.org/grpc"
 )
 
-const attemptRetry = 20
+const attemptRetry = 2
 
 func integrationGeolocation(c *communicate.GelocationRequest, retry int) (*communicate.GelocationResponse, error) {
 	ctx := context.Background()
@@ -34,7 +34,6 @@ func integrationGeolocation(c *communicate.GelocationRequest, retry int) (*commu
 func attempRetryLatency(retry int, location *communicate.GelocationResponse, err error, c *communicate.GelocationRequest) (*communicate.GelocationResponse, error) {
 	retry += 1
 	if retry <= attemptRetry {
-		time.Sleep(1 * time.Second)
 		return integrationGeolocation(c, retry)
 	}
 	return location, err

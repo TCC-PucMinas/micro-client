@@ -3,6 +3,7 @@ package controller
 import (
 	"context"
 	"errors"
+	"log"
 	"micro-client/communicate"
 	model "micro-client/models"
 	"micro-client/service"
@@ -123,7 +124,13 @@ func (s *DestinationServer) ListOneDestinationById(ctx context.Context, request 
 func (s *DestinationServer) UpdateDestinationById(ctx context.Context, request *communicate.UpdateDestinationByIdRequest) (*communicate.UpdateDestinationByIdResponse, error) {
 	res := &communicate.UpdateDestinationByIdResponse{}
 
-	destination := model.Destination{
+	destination := model.Destination{}
+
+	if err := destination.GetDestinationById(request.Id); err != nil || destination.Id == 0 {
+		return res, errors.New("Destination not found!")
+	}
+
+	destination = model.Destination{
 		Id:       request.Id,
 		City:     request.City,
 		Country:  request.Country,
@@ -133,10 +140,6 @@ func (s *DestinationServer) UpdateDestinationById(ctx context.Context, request *
 		ZipCode:  request.ZipCode,
 		Number:   request.Number,
 		Client:   model.Client{Id: request.IdClient},
-	}
-
-	if err := destination.GetDestinationById(request.Id); err != nil || destination.Id == 0 {
-		return res, errors.New("Destination not found!")
 	}
 
 	lat, lng, err := service.GetLocation(destination)

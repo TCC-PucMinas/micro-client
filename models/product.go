@@ -1,12 +1,10 @@
 package model
 
 import (
-	"encoding/json"
 	"fmt"
 	"micro-client/db"
 	"micro-client/helpers"
 	"strconv"
-	"time"
 )
 
 type Product struct {
@@ -17,142 +15,7 @@ type Product struct {
 	Client Client `json:"Client"`
 }
 
-var (
-	keyProductRedisGetById          = "key-product-get-by-id"
-	keyProductRedisGetByName        = "key-product-get-by-name"
-	keyProductRedisGetByNameAndPage = "key-product-get-by-name-and-page"
-)
-
-func setRedisCacheProductgGetById(product *Product) error {
-	db, err := db.ConnectDatabaseRedis()
-
-	if err != nil {
-		return err
-	}
-
-	json, err := json.Marshal(product)
-
-	if err != nil {
-		return err
-	}
-	key := fmt.Sprintf("%v - %v", keyProductRedisGetById, product.Id)
-
-	return db.Set(key, json, 1*time.Minute).Err()
-}
-
-func getProductRedisCacheGetOneById(id int64) (Product, error) {
-	product := Product{}
-
-	redis, err := db.ConnectDatabaseRedis()
-
-	if err != nil {
-		return product, err
-	}
-
-	key := fmt.Sprintf("%v - %v", keyProductRedisGetById, id)
-
-	value, err := redis.Get(key).Result()
-
-	if err != nil {
-		return product, err
-	}
-
-	if err := json.Unmarshal([]byte(value), &product); err != nil {
-		return product, err
-	}
-
-	return product, nil
-}
-
-func getProductRedisCacheGetOneByNameAndIdClient(name string, idClient int64) (Product, error) {
-	product := Product{}
-
-	redis, err := db.ConnectDatabaseRedis()
-
-	if err != nil {
-		return product, err
-	}
-
-	key := fmt.Sprintf("%v - %v - %v", keyProductRedisGetByName, name, idClient)
-
-	value, err := redis.Get(key).Result()
-
-	if err != nil {
-		return product, err
-	}
-
-	if err := json.Unmarshal([]byte(value), &product); err != nil {
-		return product, err
-	}
-
-	return product, nil
-}
-
-func setRedisCacheProductGetByName(product *Product) error {
-	redis, err := db.ConnectDatabaseRedis()
-
-	if err != nil {
-		return err
-	}
-
-	marshal, err := json.Marshal(product)
-
-	if err != nil {
-		return err
-	}
-	key := fmt.Sprintf("%v - %v - %v", keyProductRedisGetByName, product.Name, product.Client.Id)
-
-	return redis.Set(key, marshal, 1*time.Minute).Err()
-}
-
-func getProductRedisCacheGetOneByNamePaginate(name string, page, limit int64) ([]Product, error) {
-	var product []Product
-
-	redis, err := db.ConnectDatabaseRedis()
-
-	if err != nil {
-		return product, err
-	}
-
-	key := fmt.Sprintf("%v - %v - %v - %v", keyProductRedisGetByNameAndPage, name, page, limit)
-
-	value, err := redis.Get(key).Result()
-
-	if err != nil {
-		return product, err
-	}
-
-	if err := json.Unmarshal([]byte(value), &product); err != nil {
-		return product, err
-	}
-
-	return product, nil
-}
-
-func setRedisCacheProductGetByPaginateByName(name string, page, limit int64, product []Product) error {
-	redis, err := db.ConnectDatabaseRedis()
-
-	if err != nil {
-		return err
-	}
-
-	marshal, err := json.Marshal(product)
-
-	if err != nil {
-		return err
-	}
-
-	key := fmt.Sprintf("%v - %v - %v - %v", keyProductRedisGetByNameAndPage, name, page, limit)
-
-	return redis.Set(key, marshal, 1*time.Minute).Err()
-}
-
 func (product *Product) GetById(id int64) error {
-
-	if c, err := getProductRedisCacheGetOneById(id); err == nil {
-		product = &c
-		return nil
-	}
 
 	sql := db.ConnectDatabase()
 
@@ -166,27 +29,21 @@ func (product *Product) GetById(id int64) error {
 
 	for requestConfig.Next() {
 		var name, price, nfe string
-		var id int64
-		var idCarry, idClient int64
-		_ = requestConfig.Scan(&id, &name, &price, &nfe, &idClient, &idCarry)
-		product.Id = id
-		product.Name = name
-		product.Price = price
-		product.Nfe = nfe
-		product.Client.Id = idClient
+		var id, idClient int64
+		_ = requestConfig.Scan(&id, &name, &price, &nfe, &idClient)
+		if id != 0 {
+			product.Id = id
+			product.Name = name
+			product.Price = price
+			product.Nfe = nfe
+			product.Client.Id = idClient
+		}
 	}
-
-	_ = setRedisCacheProductgGetById(product)
 
 	return nil
 }
 
 func (product *Product) GetByNameAndAndIdClient(name string, idClient int64) error {
-
-	if c, err := getProductRedisCacheGetOneByNameAndIdClient(name, idClient); err == nil {
-		product = &c
-		return nil
-	}
 
 	sql := db.ConnectDatabase()
 
@@ -208,9 +65,6 @@ func (product *Product) GetByNameAndAndIdClient(name string, idClient int64) err
 		product.Price = price
 		product.Client.Id = idClient
 	}
-
-	_ = setRedisCacheProductGetByName(product)
-
 	return nil
 }
 
@@ -280,11 +134,6 @@ func (product *Product) GetProductByNamePaginate(name string, page, limit int64)
 
 	name = "%" + name + "%"
 
-	if c, err := getProductRedisCacheGetOneByNamePaginate(name, page, limit); err == nil {
-		productArray = c
-		return productArray, total, nil
-	}
-
 	sql := db.ConnectDatabase()
 
 	paginate := helpers.Paginate{
@@ -318,8 +167,6 @@ func (product *Product) GetProductByNamePaginate(name string, page, limit int64)
 		}
 
 	}
-
-	_ = setRedisCacheProductGetByPaginateByName(name, page, limit, productArray)
 
 	return productArray, total, nil
 }

@@ -1,11 +1,9 @@
 package model
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"micro-client/helpers"
-	"time"
 
 	"micro-client/db"
 )
@@ -24,111 +22,7 @@ type Destination struct {
 	Client   Client `json:"client"`
 }
 
-var (
-	keyDestinationRedisGetOneByClientId      = "key-destination-get-by-client-id"
-	keyDestinationRedisGetPaginateByClientId = "key-destination-get-paginate-client-id"
-	keyDestinationRedisGetOneById            = "key-destination-get-by-id"
-)
-
-func setRedisCacheDestinationGetByClientId(destination *Destination) error {
-	db, err := db.ConnectDatabaseRedis()
-
-	if err != nil {
-		return err
-	}
-
-	json, err := json.Marshal(destination)
-
-	if err != nil {
-		return err
-	}
-	key := fmt.Sprintf("%v - %v", keyDestinationRedisGetOneByClientId, json)
-
-	return db.Set(key, json, 1*time.Minute).Err()
-}
-
-func getRedisCacheDestinationGetByClientId(id int64) (Destination, error) {
-	destination := Destination{}
-
-	redis, err := db.ConnectDatabaseRedis()
-
-	if err != nil {
-		return destination, err
-	}
-
-	key := fmt.Sprintf("%v - %v", keyDestinationRedisGetOneByClientId, id)
-
-	value, err := redis.Get(key).Result()
-
-	if err != nil {
-		return destination, err
-	}
-
-	if err := json.Unmarshal([]byte(value), &destination); err != nil {
-		return destination, err
-	}
-
-	return destination, nil
-}
-
-func setRedisCacheDestinationGetById(destination *Destination) error {
-	db, err := db.ConnectDatabaseRedis()
-
-	if err != nil {
-		return err
-	}
-
-	json, err := json.Marshal(destination)
-
-	if err != nil {
-		return err
-	}
-	key := fmt.Sprintf("%v - %v", keyDestinationRedisGetOneById, destination.Id)
-
-	return db.Set(key, json, 1*time.Minute).Err()
-}
-
-func getRedisCacheDestinationGetById(id int64) (Destination, error) {
-	destination := Destination{}
-
-	redis, err := db.ConnectDatabaseRedis()
-
-	if err != nil {
-		return destination, err
-	}
-
-	key := fmt.Sprintf("%v - %v", keyDestinationRedisGetOneById, id)
-
-	value, err := redis.Get(key).Result()
-
-	if err != nil {
-		return destination, err
-	}
-
-	if err := json.Unmarshal([]byte(value), &destination); err != nil {
-		return destination, err
-	}
-
-	return destination, nil
-}
-
 func (destination *Destination) DestinationGetByClientId(idClient int64) error {
-
-	if c, err := getRedisCacheDestinationGetByClientId(idClient); err == nil {
-		destination.Id = c.Id
-		destination.Street = c.Street
-		destination.District = c.District
-		destination.Lng = c.Lng
-		destination.Lat = c.Lat
-		destination.District = c.District
-		destination.State = c.State
-		destination.Country = c.Country
-		destination.Number = c.Number
-		destination.City = c.City
-		destination.ZipCode = c.ZipCode
-		destination.Client.Id = c.Client.Id
-		return nil
-	}
 
 	sql := db.ConnectDatabase()
 
@@ -160,28 +54,10 @@ func (destination *Destination) DestinationGetByClientId(idClient int64) error {
 		return errors.New("Not found key")
 	}
 
-	_ = setRedisCacheDestinationGetByClientId(destination)
-
 	return nil
 }
 
 func (destination *Destination) GetDestinationById(idDestination int64) error {
-
-	if c, err := getRedisCacheDestinationGetById(idDestination); err == nil && c.Id != 0 {
-		destination.Id = c.Id
-		destination.Street = c.Street
-		destination.District = c.District
-		destination.Lng = c.Lng
-		destination.Lat = c.Lat
-		destination.District = c.District
-		destination.State = c.State
-		destination.Country = c.Country
-		destination.Number = c.Number
-		destination.City = c.City
-		destination.ZipCode = c.ZipCode
-		destination.Client.Id = c.Client.Id
-		return nil
-	}
 
 	sql := db.ConnectDatabase()
 
@@ -214,8 +90,6 @@ func (destination *Destination) GetDestinationById(idDestination int64) error {
 		return errors.New("Not found key")
 	}
 
-	_ = setRedisCacheDestinationGetById(destination)
-
 	return nil
 }
 
@@ -242,7 +116,7 @@ func (destination *Destination) CreateDestination() error {
 func (destination *Destination) UpdateDestination() error {
 	sql := db.ConnectDatabase()
 
-	query := "update destinations set street = ?, district = ?, city = ?, country = ?, `state` = ?, `number` = ?, lat = ?, lng = ?, zipCode = ? id_client = ? where id = ? "
+	query := "update destinations set street = ?, district = ?, city = ?, country = ?, state = ?, number = ?, lat = ?, lng = ?, zipCode = ?, id_client = ? where id = ?"
 
 	destinationUpdate, err := sql.Prepare(query)
 
@@ -279,56 +153,9 @@ func (destination *Destination) DeleteDestinationById() error {
 	return nil
 }
 
-func getClientRedisCacheGetOneByClientIdPaginate(clientId int64, page, limit int64) ([]Destination, error) {
-	var destinations []Destination
-
-	redis, err := db.ConnectDatabaseRedis()
-
-	if err != nil {
-		return destinations, err
-	}
-
-	key := fmt.Sprintf("%v - %v -%v -%v", keyDestinationRedisGetPaginateByClientId, clientId, page, limit)
-
-	value, err := redis.Get(key).Result()
-
-	if err != nil {
-		return destinations, err
-	}
-
-	if err := json.Unmarshal([]byte(value), &destinations); err != nil {
-		return destinations, err
-	}
-
-	return destinations, nil
-}
-
-func setRedisCacheClientGetByClientIdPaginate(clientId int64, page, limit int64, clients []Destination) error {
-	redis, err := db.ConnectDatabaseRedis()
-
-	if err != nil {
-		return err
-	}
-
-	marshal, err := json.Marshal(clients)
-
-	if err != nil {
-		return err
-	}
-
-	key := fmt.Sprintf("%v - %v -%v -%v", keyDestinationRedisGetPaginateByClientId, clientId, page, limit)
-
-	return redis.Set(key, marshal, 1*time.Minute).Err()
-}
-
 func (destination *Destination) GetDestinationsByClientIdPaginate(clientId int64, page, limit int64) ([]Destination, int64, error) {
 	var destinationArray []Destination
 	var total int64
-
-	if c, err := getClientRedisCacheGetOneByClientIdPaginate(clientId, page, limit); err == nil {
-		destinationArray = c
-		return destinationArray, total, nil
-	}
 
 	sql := db.ConnectDatabase()
 
@@ -370,9 +197,6 @@ func (destination *Destination) GetDestinationsByClientIdPaginate(clientId int64
 			destinationArray = append(destinationArray, destinationGet)
 		}
 
-	}
-	if len(destinationArray) > 0 {
-		_ = setRedisCacheClientGetByClientIdPaginate(clientId, page, limit, destinationArray)
 	}
 
 	return destinationArray, total, nil

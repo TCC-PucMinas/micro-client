@@ -4,13 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="de5f78af-3ea6-481f-b45c-32dcfbb39c6f" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/service/geolocation.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/71a33c8b-35b7-4571-a7bc-d86aad1b0933.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/71a33c8b-35b7-4571-a7bc-d86aad1b0933.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/controller/destination.go" beforeDir="false" afterPath="$PROJECT_DIR$/controller/destination.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scritp.sql" beforeDir="false" afterPath="$PROJECT_DIR$/scritp.sql" afterDir="false" />
-    </list>
+    <list default="true" id="de5f78af-3ea6-481f-b45c-32dcfbb39c6f" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -74,7 +68,7 @@
       <workItem from="1646954895424" duration="97000" />
       <workItem from="1646962219722" duration="3582000" />
       <workItem from="1647035568847" duration="14059000" />
-      <workItem from="1647291834972" duration="2475000" />
+      <workItem from="1647291834972" duration="2609000" />
     </task>
     <servers />
   </component>
