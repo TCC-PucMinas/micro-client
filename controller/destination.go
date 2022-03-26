@@ -3,7 +3,6 @@ package controller
 import (
 	"context"
 	"errors"
-	"log"
 	"micro-client/communicate"
 	model "micro-client/models"
 	"micro-client/service"
@@ -90,6 +89,33 @@ func (s *DestinationServer) CreateDestination(ctx context.Context, request *comm
 	}
 
 	res.Created = true
+
+	return res, nil
+}
+
+func (s *DestinationServer) ListOneProductByIdProduct(ctx context.Context, request *communicate.ListOneProductByIdProductRequest) (*communicate.ListOneDestinationByIdResponse, error) {
+	res := &communicate.ListOneDestinationByIdResponse{}
+
+	var c model.Destination
+
+	if err := c.GetDestinationByIdProduct(request.IdProduct); err != nil {
+		return res, err
+	}
+
+	destination := &communicate.Destination{}
+	destination.Id = c.Id
+	destination.Street = c.Street
+	destination.District = c.District
+	destination.City = c.City
+	destination.Country = c.Country
+	destination.State = c.State
+	destination.Number = c.Number
+	destination.Lat = c.Lat
+	destination.Lng = c.Lng
+	destination.ZipCode = c.ZipCode
+	destination.IdClient = c.Client.Id
+
+	res.Destination = destination
 
 	return res, nil
 }

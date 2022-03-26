@@ -84,6 +84,10 @@ message ListOneDestinationByIdRequest {
   int64 id = 1;
 }
 
+message ListOneProductByIdProductRequest {
+  int64 idProduct = 1;
+}
+
 message ListOneDestinationByIdResponse {
   Destination destination = 1;
 }
@@ -93,6 +97,7 @@ service DestinationCommunicate {
   rpc DestinationListAll (DestinationListAllRequest) returns (DestinationListAllResponse) {};
   rpc CreateDestination (CreateDestinationRequest) returns (CreateDestinationResponse) {};
   rpc ListOneDestinationById (ListOneDestinationByIdRequest) returns (ListOneDestinationByIdResponse) {};
+  rpc ListOneProductByIdProduct (ListOneProductByIdProductRequest) returns (ListOneDestinationByIdResponse) {};
   rpc UpdateDestinationById (UpdateDestinationByIdRequest) returns (UpdateDestinationByIdResponse) {};
   rpc DeleteDestinationById (DeleteDestinationByIdRequest) returns (DeleteDestinationByIdResponse) {};
 }

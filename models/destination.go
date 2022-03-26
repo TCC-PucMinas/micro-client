@@ -1,7 +1,6 @@
 package model
 
 import (
-	"errors"
 	"fmt"
 	"micro-client/helpers"
 
@@ -50,8 +49,41 @@ func (destination *Destination) DestinationGetByClientId(idClient int64) error {
 		destination.Lng = lng
 	}
 
-	if destination.Id == 0 {
-		return errors.New("Not found key")
+	return nil
+}
+
+func (destination *Destination) GetDestinationByIdProduct(idProduct int64) error {
+
+	sql := db.ConnectDatabase()
+
+	query := ` select d.id, d.street, d.district, d.city, d.country, d.state, d.number, d.lat, d.lng, d.zipCode, d.id_client from products p
+				inner join clients c on c.id = p.id_client
+				inner join destinations d on d.id_client = d.id_client
+			where p.id = ? LIMIT 1;`
+
+	requestConfig, err := sql.Query(query, idProduct)
+
+	if err != nil {
+		return err
+	}
+
+	for requestConfig.Next() {
+		var street, district, city, country, state, number, lat, lng, zipCode string
+		var id, idClient int64
+		_ = requestConfig.Scan(&id, &street, &district, &city, &country, &state, &number, &lat, &lng, &zipCode, &idClient)
+		if id != 0 {
+			destination.Id = id
+			destination.Street = street
+			destination.District = district
+			destination.City = city
+			destination.Country = country
+			destination.State = state
+			destination.Number = number
+			destination.Lat = lat
+			destination.Lng = lng
+			destination.ZipCode = zipCode
+			destination.Client.Id = idClient
+		}
 	}
 
 	return nil
@@ -84,10 +116,6 @@ func (destination *Destination) GetDestinationById(idDestination int64) error {
 		destination.Lng = lng
 		destination.ZipCode = zipCode
 		destination.Client.Id = idClient
-	}
-
-	if destination.Id == 0 {
-		return errors.New("Not found key")
 	}
 
 	return nil
