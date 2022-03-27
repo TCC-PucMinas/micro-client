@@ -58,7 +58,7 @@ func (destination *Destination) GetDestinationByIdProduct(idProduct int64) error
 
 	query := ` select d.id, d.street, d.district, d.city, d.country, d.state, d.number, d.lat, d.lng, d.zipCode, d.id_client from products p
 				inner join clients c on c.id = p.id_client
-				inner join destinations d on d.id_client = d.id_client
+				inner join destinations d on d.id_client = c.id
 			where p.id = ? LIMIT 1;`
 
 	requestConfig, err := sql.Query(query, idProduct)
