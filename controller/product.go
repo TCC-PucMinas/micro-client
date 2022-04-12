@@ -14,7 +14,7 @@ func (s *ProductServer) ProductListAll(ctx context.Context, request *communicate
 
 	var product model.Product
 
-	products, total, err := product.GetProductByNamePaginate(request.Name, request.Page, request.Limit)
+	products, total, err := product.GetProductByNamePaginate(request.Name, request.IdClient, request.Page, request.Limit)
 
 	if err != nil {
 		return res, err
@@ -62,15 +62,17 @@ func (s *ProductServer) ListOneProductById(ctx context.Context, request *communi
 func (s *ProductServer) CreateProduct(ctx context.Context, request *communicate.CreateProductRequest) (*communicate.CreateProductResponse, error) {
 	res := &communicate.CreateProductResponse{}
 
-	product := model.Product{
+	product := model.Product{}
+
+	if err := product.GetByNameAndAndIdClient(request.Name, request.IdClient); err != nil || product.Id != 0 {
+		return res, errors.New("product not duplicated!")
+	}
+
+	product = model.Product{
 		Name:   request.Name,
 		Price:  request.Price,
 		Nfe:    request.Nfe,
 		Client: model.Client{Id: request.IdClient},
-	}
-
-	if err := product.GetByNameAndAndIdClient(request.Name, request.IdClient); err != nil || product.Id != 0 {
-		return res, errors.New("product not duplicated!")
 	}
 
 	if err := product.CreateProduct(); err != nil {

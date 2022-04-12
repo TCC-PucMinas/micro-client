@@ -128,11 +128,15 @@ func (product *Product) CreateProduct() error {
 	return nil
 }
 
-func (product *Product) GetProductByNamePaginate(name string, page, limit int64) ([]Product, int64, error) {
+func (product *Product) GetProductByNamePaginate(name string, idClient, page, limit int64) ([]Product, int64, error) {
 	var productArray []Product
 	var total int64
-
 	name = "%" + name + "%"
+	var querySearch string
+
+	if idClient != 0 {
+		querySearch = fmt.Sprintf("and id_client = %v", idClient)
+	}
 
 	sql := db.ConnectDatabase()
 
@@ -144,7 +148,7 @@ func (product *Product) GetProductByNamePaginate(name string, page, limit int64)
 	paginate.PaginateMounted()
 	paginate.MountedQuery("products")
 
-	query := fmt.Sprintf("select id, name, price, nfe, id_client, %v from products where name like ? LIMIT ? OFFSET ?;", paginate.Query)
+	query := fmt.Sprintf("select id, name, price, nfe, id_client, %v from products where name like ? %v LIMIT ? OFFSET ?;", paginate.Query, querySearch)
 
 	requestConfig, err := sql.Query(query, name, paginate.Limit, paginate.Page)
 
